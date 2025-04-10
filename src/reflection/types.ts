@@ -12,7 +12,7 @@ export const ReflectionZodState = z.object({
     .custom<BaseMessage[]>()
     .langgraph.reducer(
       (a, b) => addMessages(a, b),
-      z.custom<BaseMessage | BaseMessage[]>()
+      z.custom<BaseMessage | BaseMessage[]>(),
     ),
   /**
    * The reasoning generated based on the system prompt, few shots, and input messages.
@@ -21,10 +21,12 @@ export const ReflectionZodState = z.object({
   /**
    * The final answer, and explanation.
    */
-  answer: z.object({
-    answer: z.string(),
-    explanation: z.string()
-  }).default(() => ({ answer: "", explanation: "" }))
+  answer: z
+    .object({
+      answer: z.string(),
+      explanation: z.string(),
+    })
+    .default(() => ({ answer: "", explanation: "" })),
 });
 
 export type ReflectionState = z.infer<typeof ReflectionZodState>;

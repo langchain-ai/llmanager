@@ -12,7 +12,7 @@ export const AgentZodState = z.object({
     .custom<BaseMessage[]>()
     .langgraph.reducer(
       (a, b) => addMessages(a, b),
-      z.custom<BaseMessage | BaseMessage[]>()
+      z.custom<BaseMessage | BaseMessage[]>(),
     ),
   /**
    * The few shot examples to be used in the prompt.
@@ -26,10 +26,12 @@ export const AgentZodState = z.object({
   /**
    * The final answer, and explanation.
    */
-  answer: z.object({
-    answer: z.string(),
-    explanation: z.string()
-  }).default(() => ({ answer: "", explanation: "" }))
+  answer: z
+    .object({
+      answer: z.string(),
+      explanation: z.string(),
+    })
+    .default(() => ({ answer: "", explanation: "" })),
 });
 
 export type AgentState = z.infer<typeof AgentZodState>;
