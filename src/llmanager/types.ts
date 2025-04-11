@@ -15,10 +15,9 @@ export const AgentZodState = z.object({
       z.custom<BaseMessage | BaseMessage[]>(),
     ),
   /**
-   * The few shot examples to be used in the prompt.
-   * An array of few shots, with each item containing the example.
+   * The full context prompt as plain text.
    */
-  fewShots: z.array(z.string()).default(() => []),
+  promptContext: z.string(),
   /**
    * The reasoning generated based on the system prompt, few shots, and input messages.
    */
@@ -26,12 +25,10 @@ export const AgentZodState = z.object({
   /**
    * The final answer, and explanation.
    */
-  answer: z
-    .object({
-      answer: z.string(),
-      explanation: z.string(),
-    })
-    .default(() => ({ answer: "", explanation: "" })),
+  answer: z.object({
+    explanation: z.string(),
+    status: z.enum(["approved", "rejected"]),
+  }),
 });
 
 export type AgentState = z.infer<typeof AgentZodState>;
