@@ -7,7 +7,7 @@ import { explanationReflection } from "./nodes/explanation-reflection.js";
  * Routes the reflection based on the change type. If the changeType is
  * 'explanationChanged', it will route to the explanation reflection node.
  * Otherwise, it will route to the full reflection node.
- * 
+ *
  * @param state The current state of the reflection.
  * @returns The command to route to the appropriate reflection node.
  */
