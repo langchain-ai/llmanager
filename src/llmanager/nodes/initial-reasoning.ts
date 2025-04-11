@@ -1,31 +1,7 @@
 import { AgentState, AgentUpdate } from "../types.js";
-import { BaseStore, LangGraphRunnableConfig } from "@langchain/langgraph";
-import {
-  FewShotExample,
-  searchFewShotExamples,
-} from "../../stores/few-shot.js";
-import { getReflections } from "../../stores/reflection.js";
-import { traceable } from "langsmith/traceable";
+import { LangGraphRunnableConfig } from "@langchain/langgraph";
 import { ChatAnthropic } from "@langchain/anthropic";
-
-async function buildPromptFunc(
-  query: string,
-  store: BaseStore | undefined,
-): Promise<{
-  fewShotExamples: FewShotExample[];
-  reflections: string[];
-}> {
-  const examples = await searchFewShotExamples(store, query, { limit: 10 });
-
-  const reflections = await getReflections(store);
-
-  return {
-    fewShotExamples: examples,
-    reflections,
-  };
-}
-
-const buildPrompt = traceable(buildPromptFunc, { name: "build-prompt" });
+import { buildContext, formatContextPrompt } from "../utils/build-context.js";
 
 const INITIAL_REASONING_PROMPT = `You're an AI manager tasked with analyzing and reasoning about a request one of your employees has made.
 Your task is to analyze the request from one of your employees, and reason about whether it should be approved or rejected.
@@ -38,10 +14,7 @@ You should think through this carefully, accounting for all aspects of their req
 
 Here is the context:
 
-{FEW_SHOT_EXAMPLES}
-{REFLECTIONS}
-{APPROVAL_CRITERIA}
-{REJECTION_CRITERIA}
+{CONTEXT}
 
 You are NOT to make a final decision, but rather to weigh the request against all of the above context, and reason about whether it should be approved or rejected.
 Ensure your reasoning contains points from both sides of the argument.
@@ -60,46 +33,20 @@ export async function initialReasoning(
     throw new Error("No query found");
   }
 
-  const { fewShotExamples, reflections } = await buildPrompt(
+  const { fewShotExamples, reflections } = await buildContext(
     query,
     config.store,
   );
 
-  const formattedFewShots = fewShotExamples
-    .map(
-      (ex, i) => `<example index="${i}">
-  Request: ${ex.input}
-
-  Explanation: ${ex.explanation}
-
-  Final Answer: ${ex.answer}
-</example>`,
-    )
-    .join("\n\n");
-
-  const formattedReflections = reflections.map((r) => `- ${r}`).join("\n");
-
-  const formattedApprovalCriteria =
-    config.configurable?.approvalCriteria ?? "None provided.";
-  const formattedRejectionCriteria =
-    config.configurable?.rejectionCriteria ?? "None provided.";
-
   const formattedPrompt = INITIAL_REASONING_PROMPT.replace(
-    "{FEW_SHOT_EXAMPLES}",
-    `<all-examples>\n${formattedFewShots}</all-examples>`,
-  )
-    .replace(
-      "{REFLECTIONS}",
-      `<reflections>\n${formattedReflections}</reflections>`,
-    )
-    .replace(
-      "{APPROVAL_CRITERIA}",
-      `<approval-criteria>\n${formattedApprovalCriteria}</approval-criteria>`,
-    )
-    .replace(
-      "{REJECTION_CRITERIA}",
-      `<rejection-criteria>\n${formattedRejectionCriteria}</rejection-criteria>`,
-    );
+    "{CONTEXT}",
+    formatContextPrompt({
+      fewShotExamples,
+      reflections,
+      approvalCriteria: config.configurable?.approvalCriteria,
+      rejectionCriteria: config.configurable?.rejectionCriteria,
+    }),
+  );
 
   const model = new ChatAnthropic({
     model: "claude-3-7-sonnet",
