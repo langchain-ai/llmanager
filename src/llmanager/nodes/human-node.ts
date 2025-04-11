@@ -2,6 +2,7 @@ import { HumanInterrupt, HumanResponse } from "@langchain/langgraph/prebuilt";
 import { AgentState } from "../types.js";
 import { Command, END, interrupt, Send } from "@langchain/langgraph";
 import { ReflectionState } from "../../reflection/types.js";
+import { findQueryStringOrThrow } from "../../utils/query.js";
 
 /**
  * Constructs a description for a human interrupt based on the provided inputs.
@@ -112,11 +113,7 @@ function handleHumanResponse(
 }
 
 export async function humanNode(state: AgentState): Promise<Command> {
-  const query = state.messages.findLast((m) => m.getType() === "human")
-    ?.content as string | undefined;
-  if (!query) {
-    throw new Error("No query found");
-  }
+  const query = findQueryStringOrThrow(state.messages);
 
   const description = constructDescription({
     request: query,
