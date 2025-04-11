@@ -65,7 +65,7 @@ export async function initialReasoning(
   ]);
 
   return {
-    reasoning: response.content as string,
+    generatedReasoning: response.content as string,
     promptContext: formattedPrompt,
   };
 }

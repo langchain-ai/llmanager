@@ -21,7 +21,7 @@ export const AgentZodState = z.object({
   /**
    * The reasoning generated based on the system prompt, few shots, and input messages.
    */
-  reasoning: z.string().default(() => ""),
+  generatedReasoning: z.string().default(() => ""),
   /**
    * The final answer, and explanation.
    */
