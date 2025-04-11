@@ -19,7 +19,6 @@ Explanation behind the suggestion:
 
 ${inputs.explanation}
 
-
 ## Actions
 
 - To accept the action, please click 'Accept' without making changes to the inputs.
