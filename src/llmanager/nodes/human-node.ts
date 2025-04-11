@@ -1,8 +1,16 @@
 import { HumanInterrupt, HumanResponse } from "@langchain/langgraph/prebuilt";
 import { AgentState } from "../types.js";
-import { Command, END, interrupt, Send } from "@langchain/langgraph";
+import {
+  BaseStore,
+  Command,
+  END,
+  interrupt,
+  LangGraphRunnableConfig,
+  Send,
+} from "@langchain/langgraph";
 import { ReflectionState } from "../../reflection/types.js";
 import { findQueryStringOrThrow } from "../../utils/query.js";
+import { putFewShotExamples } from "../../stores/few-shot.js";
 
 /**
  * Constructs a description for a human interrupt based on the provided inputs.
@@ -46,18 +54,22 @@ ${inputs.explanation}
  * Processes the feedback received from a human user regarding a proposed agent action.
  * Based on the human's response (`accept`, `ignore`, `edit`), this function determines
  * the next step for the agent, encapsulated within a `Command` object.
+ * If the response is 'accept'/'edit', the function also updates the few-shot store with the
+ * successful example.
  *
  * Throws an error if the response type is invalid or if the arguments for an 'edit' response
  * are malformed.
  *
  * @param {HumanResponse} response - The response object from the human user, indicating their feedback (accept, ignore, edit) and potentially edited arguments.
  * @param {AgentState} state - The current state of the agent, containing messages, reasoning, and the original proposed answer.
+ * @param {BaseStore | undefined} store - The few-shot example store. If provided and the human accepts the response, the interaction is added as an example.
  * @returns {Command} A command object directing the agent's next action. This could be to end the process (`END`) or to proceed to a reflection step (`Send("reflection", ...)`).
  */
-function handleHumanResponse(
+async function handleHumanResponse(
   response: HumanResponse,
   state: AgentState,
-): Command {
+  store: BaseStore | undefined,
+): Promise<Command> {
   const responseType = response.type;
   if (responseType === "response") {
     throw new Error(
@@ -67,14 +79,6 @@ function handleHumanResponse(
 
   if (responseType === "ignore") {
     // Ignored. End with no further action.
-    return new Command({
-      goto: END,
-    });
-  }
-
-  if (responseType === "accept") {
-    // Accepted as-is. No further action is necessary.
-    // HERE IS WHERE YOU WOULD IMPLEMENT THE LOGIC TO ACCEPT THE REQUEST AND TAKE ANY ADDITIONAL ACTIONS NEEDED.
     return new Command({
       goto: END,
     });
@@ -92,14 +96,31 @@ function handleHumanResponse(
     );
   }
 
+  const updatedAnswer = {
+    status: args.args.status,
+    explanation: args.args.explanation,
+  };
+
+  // Save the final answer & explanation in store for future use in few-shot examples
+  await putFewShotExamples(store, {
+    input: findQueryStringOrThrow(state.messages),
+    answer: updatedAnswer.status,
+    explanation: updatedAnswer.explanation,
+  });
+
+  if (responseType === "accept") {
+    // Accepted as-is. No further action is necessary.
+    // HERE IS WHERE YOU WOULD IMPLEMENT THE LOGIC TO ACCEPT THE REQUEST AND TAKE ANY ADDITIONAL ACTIONS NEEDED.
+    return new Command({
+      goto: END,
+    });
+  }
+
   const reflectionInput: ReflectionState = {
     messages: state.messages,
     generatedReasoning: state.generatedReasoning,
     originalAnswer: state.answer,
-    editedAnswer: {
-      status: args.args.status,
-      explanation: args.args.explanation,
-    },
+    editedAnswer: updatedAnswer,
     changeType:
       args.args.status === state.answer.status
         ? "explanationChanged"
@@ -112,7 +133,10 @@ function handleHumanResponse(
   });
 }
 
-export async function humanNode(state: AgentState): Promise<Command> {
+export async function humanNode(
+  state: AgentState,
+  config: LangGraphRunnableConfig,
+): Promise<Command> {
   const query = findQueryStringOrThrow(state.messages);
 
   const description = constructDescription({
@@ -142,5 +166,5 @@ export async function humanNode(state: AgentState): Promise<Command> {
     interruptConfig,
   )[0];
 
-  return handleHumanResponse(response, state);
+  return handleHumanResponse(response, state, config.store);
 }
