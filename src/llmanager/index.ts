@@ -11,7 +11,7 @@ const workflow = new StateGraph(AgentZodState, AgentZodConfiguration)
   .addNode("human_node", humanNode, {
     // Human node will only reflect if the generated answer is edited/changed.
     // If it's accepted as-is, it ends.
-    // ends: ["reflection", END],
+    ends: ["reflection", END],
   })
   .addNode("reflection", reflectionGraph)
   .addEdge(START, "initial_reasoning")
