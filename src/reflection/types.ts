@@ -37,7 +37,7 @@ export const ReflectionZodState = z.object({
    * The change that was made to the original suggestion, and what
    * the reflection should be focused on.
    * 'explanationChanged' - if the suggestion action was correct,
-   *  but the explanation behind it was incorrect. Preform reflection
+   *  but the explanation behind it was incorrect. Perform reflection
    *  on the explanation only.
    * 'allChanged' - if the suggestion action was incorrect (and
    *  the explanation by extension). Perform reflection on both the
