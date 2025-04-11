@@ -94,7 +94,7 @@ function handleHumanResponse(
 
   const reflectionInput: ReflectionState = {
     messages: state.messages,
-    reasoning: state.reasoning,
+    generatedReasoning: state.generatedReasoning,
     originalAnswer: state.answer,
     editedAnswer: {
       status: args.args.status,

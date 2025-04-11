@@ -6,7 +6,7 @@ import { humanNode } from "./nodes/human-node.js";
 import { graph as reflectionGraph } from "../reflection/index.js";
 
 const workflow = new StateGraph(AgentZodState, AgentZodConfiguration)
-  .addNode("initial_reasoning", reasoningGraph)
+  .addNode("reasoning", reasoningGraph)
   .addNode("final_answer", finalAnswer)
   .addNode("human_node", humanNode, {
     // Human node will only reflect if the generated answer is edited/changed.
@@ -14,8 +14,8 @@ const workflow = new StateGraph(AgentZodState, AgentZodConfiguration)
     ends: ["reflection", END],
   })
   .addNode("reflection", reflectionGraph)
-  .addEdge(START, "initial_reasoning")
-  .addEdge("initial_reasoning", "final_answer")
+  .addEdge(START, "reasoning")
+  .addEdge("reasoning", "final_answer")
   .addEdge("final_answer", "human_node")
   .addEdge("reflection", END);
 

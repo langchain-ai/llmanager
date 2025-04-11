@@ -46,7 +46,7 @@ export async function finalAnswer(state: AgentState): Promise<AgentUpdate> {
     "{CONTEXT}",
     state.promptContext,
   )
-    .replace("{REASONING}", state.reasoning)
+    .replace("{REASONING}", state.generatedReasoning)
     .replace("{REQUEST}", query);
 
   const model = new ChatAnthropic({
