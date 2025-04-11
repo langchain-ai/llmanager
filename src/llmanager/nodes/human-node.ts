@@ -1,6 +1,7 @@
 import { HumanInterrupt, HumanResponse } from "@langchain/langgraph/prebuilt";
 import { AgentState } from "../types.js";
 import { Command, END, interrupt, Send } from "@langchain/langgraph";
+import { ReflectionState } from "../../reflection/types.js";
 
 function constructDescription(inputs: {
   request: string;
@@ -102,12 +103,22 @@ export async function humanNode(state: AgentState): Promise<Command> {
     );
   }
 
+  const reflectionInput: ReflectionState = {
+    messages: state.messages,
+    reasoning: state.reasoning,
+    originalAnswer: state.answer,
+    editedAnswer: {
+      status: args.args.status,
+      explanation: args.args.explanation,
+    },
+    changeType:
+      args.args.status === state.answer.status
+        ? "explanationChanged"
+        : "allChanged",
+  };
+
   // The suggested action was edited. Send to reflection.
   return new Command({
-    goto: new Send("reflection", {
-      messages: state.messages,
-      reasoning: state.reasoning,
-      answer: state.answer,
-    }),
+    goto: new Send("reflection", reflectionInput),
   });
 }
