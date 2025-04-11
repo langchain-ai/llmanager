@@ -9,8 +9,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "npx @langchain/langgraph-cli@latest dev --port 2024 --no-browser",
-    "build:langgraph": "npx @langchain/langgraph-cli@latest build -t latest",
+    "dev": "langgraphjs dev --port 2024 --no-browser",
     "build": "tsc",
     "clean": "rm -rf dist",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=\\.test\\.ts$ --testPathIgnorePatterns=\\.int\\.test\\.ts$",
@@ -36,6 +35,7 @@
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.9.1",
     "@jest/globals": "^29.7.0",
+    "@langchain/langgraph-cli": "^0.0.21",
     "@tsconfig/recommended": "^1.0.7",
     "@types/jest": "^29.5.0",
     "@types/node": "^22.10.6",
