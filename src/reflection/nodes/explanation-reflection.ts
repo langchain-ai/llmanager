@@ -71,7 +71,10 @@ export async function explanationReflection(
   state: ReflectionState,
   config: LangGraphRunnableConfig,
 ): Promise<ReflectionUpdate> {
-  const reflections = await getReflections(config.store);
+  const reflections = await getReflections(
+    config.store,
+    config.configurable?.assistant_id,
+  );
   const prompt = buildReflectionPrompt({
     explanation: state.originalAnswer.explanation,
     correctedExplanation: state.editedAnswer.explanation,
@@ -115,7 +118,10 @@ export async function explanationReflection(
     throw new Error("No new reflections generated");
   }
 
-  await putReflections(config.store, [...reflections, ...newReflections]);
+  await putReflections(config.store, config.configurable?.assistant_id, [
+    ...reflections,
+    ...newReflections,
+  ]);
 
   return {};
 }

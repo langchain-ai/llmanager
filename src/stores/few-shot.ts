@@ -22,13 +22,19 @@ export type FewShotExample = {
 async function searchFewShotExamplesFunc(
   store: BaseStore | undefined,
   query: string,
+  assistantId: string | undefined,
   args?: { limit?: number },
 ): Promise<FewShotExample[]> {
   if (!store) {
     throw new Error("Store not found");
   }
+  if (!assistantId) {
+    throw new Error(
+      "No assistant ID found when attempting to search few shot examples.",
+    );
+  }
 
-  const results = await store.search(FEW_SHOT_NAMESPACE, {
+  const results = await store.search([...FEW_SHOT_NAMESPACE, assistantId], {
     query,
     limit: args?.limit,
   });
@@ -43,12 +49,18 @@ export const searchFewShotExamples = traceable(searchFewShotExamplesFunc, {
 
 async function putFewShotExamplesFunc(
   store: BaseStore | undefined,
+  assistantId: string | undefined,
   example: FewShotExample,
 ): Promise<void> {
   if (!store) {
     throw new Error("Store not found");
   }
-  await store.put(FEW_SHOT_NAMESPACE, uuidv4(), example);
+  if (!assistantId) {
+    throw new Error(
+      "No assistant ID found when attempting to put few shot examples.",
+    );
+  }
+  await store.put([...FEW_SHOT_NAMESPACE, assistantId], uuidv4(), example);
 }
 
 export const putFewShotExamples = traceable(putFewShotExamplesFunc, {

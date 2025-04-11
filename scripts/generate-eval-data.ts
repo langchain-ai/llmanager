@@ -10,7 +10,7 @@ async function main() {
       .describe("The generated requests to be used to test the agent"),
   });
   const model = new ChatOpenAI({
-    model: "gpt-4.5",
+    model: "gpt-4.5-preview-2025-02-27",
     temperature: 0.7,
   }).bindTools(
     [
@@ -31,11 +31,11 @@ You're helping them evaluate an agent who makes decisions on whether to approve/
 
 These requests should be anything an employee could ask his manager for approval for at a software company like Rakuten.
 
-The employees could be in software, sales, marketing, etc.
+The employees you're emulating are all software engineers.
 
 Ensure each request is somewhat detailed, but not too long. These should be 2-3 sentences, and should emulate what real-life requests would look like.
 
-Generate 5 requests.`;
+Generate 25 requests.`;
 
   const response = await model.invoke([{ role: "user", content: prompt }]);
 

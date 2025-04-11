@@ -5,14 +5,22 @@ import { getReflections } from "../stores/reflection.js";
 
 async function buildContextFunc(
   query: string,
-  store: BaseStore | undefined,
+  inputs: {
+    store: BaseStore | undefined;
+    assistantId: string | undefined;
+  },
 ): Promise<{
   fewShotExamples: FewShotExample[];
   reflections: string[];
 }> {
-  const examples = await searchFewShotExamples(store, query, { limit: 10 });
+  const examples = await searchFewShotExamples(
+    inputs.store,
+    query,
+    inputs.assistantId,
+    { limit: 10 },
+  );
 
-  const reflections = await getReflections(store);
+  const reflections = await getReflections(inputs.store, inputs.assistantId);
 
   return {
     fewShotExamples: examples,

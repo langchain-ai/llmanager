@@ -33,10 +33,10 @@ export async function initialReasoning(
 ): Promise<ReasoningUpdate> {
   const query = findQueryStringOrThrow(state.messages);
 
-  const { fewShotExamples, reflections } = await buildContext(
-    query,
-    config.store,
-  );
+  const { fewShotExamples, reflections } = await buildContext(query, {
+    store: config.store,
+    assistantId: config.configurable?.assistant_id,
+  });
 
   const formattedPrompt = INITIAL_REASONING_PROMPT.replace(
     "{CONTEXT}",
