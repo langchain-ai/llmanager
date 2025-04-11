@@ -9,7 +9,7 @@
     "index": {
       "embed": "openai:text-embedding-3-large",
       "dims": 3072,
-      "fields": ["$"]
+      "fields": ["input"]
     }
   }
 }
