@@ -8,14 +8,15 @@ function constructDescription(inputs: {
   status: "approved" | "rejected";
 }): string {
   return `# Approval Request
+
 The following request was made by an employee:
 \`\`\`
 ${inputs.request}
 \`\`\`
 
-LLManager is suggesting the following action be: **${inputs.status}**
+**LLManager** is suggesting the following action be taken: **${inputs.status}**
 
-Explanation behind the suggestion:
+The following explanation was provided behind the action:
 
 ${inputs.explanation}
 
