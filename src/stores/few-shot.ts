@@ -17,13 +17,15 @@ export type FewShotExample = {
    * The user's input.
    */
   input: string;
-}
+};
 
 const _DATA_KEY = "few_shots";
 
-async function getFewShotExamplesFunc(store: BaseStore | undefined): Promise<FewShotExample[]> {
+async function getFewShotExamplesFunc(
+  store: BaseStore | undefined,
+): Promise<FewShotExample[]> {
   if (!store) {
-    throw new Error("Store not found")
+    throw new Error("Store not found");
   }
 
   const results = await store.get(FEW_SHOT_NAMESPACE, FEW_SHOT_KEY);
@@ -34,29 +36,44 @@ async function getFewShotExamplesFunc(store: BaseStore | undefined): Promise<Few
   return results.value[_DATA_KEY] ?? [];
 }
 
-export const getFewShotExamples = traceable(getFewShotExamplesFunc, { name: "get-few-shot-examples"})
+export const getFewShotExamples = traceable(getFewShotExamplesFunc, {
+  name: "get-few-shot-examples",
+});
 
-async function searchFewShotExamplesFunc(store: BaseStore | undefined, query: string, args?: { limit?: number }): Promise<FewShotExample[]> {
+async function searchFewShotExamplesFunc(
+  store: BaseStore | undefined,
+  query: string,
+  args?: { limit?: number },
+): Promise<FewShotExample[]> {
   if (!store) {
-    throw new Error("Store not found")
+    throw new Error("Store not found");
   }
 
   const results = await store.search(FEW_SHOT_NAMESPACE, {
     query,
-    limit: args?.limit
+    limit: args?.limit,
   });
 
-  const items: FewShotExample[] = results.flatMap((r) => r.value?.[_DATA_KEY] ?? [])
+  const items: FewShotExample[] = results.flatMap(
+    (r) => r.value?.[_DATA_KEY] ?? [],
+  );
   return items;
 }
 
-export const searchFewShotExamples = traceable(searchFewShotExamplesFunc, { name: "search-few-shot-examples"})
+export const searchFewShotExamples = traceable(searchFewShotExamplesFunc, {
+  name: "search-few-shot-examples",
+});
 
-async function putFewShotExamplesFunc(store: BaseStore | undefined, examples: FewShotExample[]): Promise<void> {
+async function putFewShotExamplesFunc(
+  store: BaseStore | undefined,
+  examples: FewShotExample[],
+): Promise<void> {
   if (!store) {
-    throw new Error("Store not found")
+    throw new Error("Store not found");
   }
   await store.put(FEW_SHOT_NAMESPACE, FEW_SHOT_KEY, { [_DATA_KEY]: examples });
 }
-  
-export const putFewShotExamples = traceable(putFewShotExamplesFunc, { name: "put-few-shot-examples"})
+
+export const putFewShotExamples = traceable(putFewShotExamplesFunc, {
+  name: "put-few-shot-examples",
+});

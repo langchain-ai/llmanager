@@ -1,13 +1,19 @@
 import { AgentState, AgentUpdate } from "../types.js";
 import { BaseStore, LangGraphRunnableConfig } from "@langchain/langgraph";
-import { FewShotExample, searchFewShotExamples } from "../../stores/few-shot.js";
+import {
+  FewShotExample,
+  searchFewShotExamples,
+} from "../../stores/few-shot.js";
 import { getReflections } from "../../stores/reflection.js";
 import { traceable } from "langsmith/traceable";
 import { ChatAnthropic } from "@langchain/anthropic";
 
-async function buildPromptFunc(query: string, store: BaseStore | undefined): Promise<{
-  fewShotExamples: FewShotExample[],
-  reflections: string[]
+async function buildPromptFunc(
+  query: string,
+  store: BaseStore | undefined,
+): Promise<{
+  fewShotExamples: FewShotExample[];
+  reflections: string[];
 }> {
   const examples = await searchFewShotExamples(store, query, { limit: 10 });
 
@@ -15,8 +21,8 @@ async function buildPromptFunc(query: string, store: BaseStore | undefined): Pro
 
   return {
     fewShotExamples: examples,
-    reflections
-  }
+    reflections,
+  };
 }
 
 const buildPrompt = traceable(buildPromptFunc, { name: "build-prompt" });
@@ -46,51 +52,72 @@ Ensure your reasoning is detailed, and clear.`;
 
 export async function initialReasoning(
   state: AgentState,
-  config: LangGraphRunnableConfig
+  config: LangGraphRunnableConfig,
 ): Promise<AgentUpdate> {
-  const query = state.messages.findLast((m) => m.getType() === "human")?.content as string | undefined;
+  const query = state.messages.findLast((m) => m.getType() === "human")
+    ?.content as string | undefined;
   if (!query) {
-    throw new Error("No query found")
+    throw new Error("No query found");
   }
 
-  const { fewShotExamples, reflections } = await buildPrompt(query, config.store);
+  const { fewShotExamples, reflections } = await buildPrompt(
+    query,
+    config.store,
+  );
 
-  const formattedFewShots = fewShotExamples.map((ex, i) => `<example index="${i}">
+  const formattedFewShots = fewShotExamples
+    .map(
+      (ex, i) => `<example index="${i}">
   Request: ${ex.input}
 
   Explanation: ${ex.explanation}
 
   Final Answer: ${ex.answer}
-</example>`).join("\n\n");
+</example>`,
+    )
+    .join("\n\n");
 
   const formattedReflections = reflections.map((r) => `- ${r}`).join("\n");
 
-  const formattedApprovalCriteria = config.configurable?.approvalCriteria ?? "None provided.";
-  const formattedRejectionCriteria = config.configurable?.rejectionCriteria ?? "None provided.";
+  const formattedApprovalCriteria =
+    config.configurable?.approvalCriteria ?? "None provided.";
+  const formattedRejectionCriteria =
+    config.configurable?.rejectionCriteria ?? "None provided.";
 
-  const formattedPrompt = INITIAL_REASONING_PROMPT
-    .replace("{FEW_SHOT_EXAMPLES}", `<all-examples>\n${formattedFewShots}</all-examples>`)
-    .replace("{REFLECTIONS}", `<reflections>\n${formattedReflections}</reflections>`)
-    .replace("{APPROVAL_CRITERIA}", `<approval-criteria>\n${formattedApprovalCriteria}</approval-criteria>`)
-    .replace("{REJECTION_CRITERIA}", `<rejection-criteria>\n${formattedRejectionCriteria}</rejection-criteria>`);
+  const formattedPrompt = INITIAL_REASONING_PROMPT.replace(
+    "{FEW_SHOT_EXAMPLES}",
+    `<all-examples>\n${formattedFewShots}</all-examples>`,
+  )
+    .replace(
+      "{REFLECTIONS}",
+      `<reflections>\n${formattedReflections}</reflections>`,
+    )
+    .replace(
+      "{APPROVAL_CRITERIA}",
+      `<approval-criteria>\n${formattedApprovalCriteria}</approval-criteria>`,
+    )
+    .replace(
+      "{REJECTION_CRITERIA}",
+      `<rejection-criteria>\n${formattedRejectionCriteria}</rejection-criteria>`,
+    );
 
   const model = new ChatAnthropic({
     model: "claude-3-7-sonnet",
     temperature: 0,
-  })
+  });
 
   const response = await model.invoke([
     {
       role: "system",
-      content: formattedPrompt
+      content: formattedPrompt,
     },
     {
       role: "user",
-      content: query
-    }
-  ])
+      content: query,
+    },
+  ]);
 
   return {
     reasoning: response.content as string,
-  }
+  };
 }
