@@ -1,10 +1,7 @@
 import { traceable } from "langsmith/traceable";
 import { BaseStore } from "@langchain/langgraph";
-import {
-  FewShotExample,
-  searchFewShotExamples,
-} from "../../stores/few-shot.js";
-import { getReflections } from "../../stores/reflection.js";
+import { FewShotExample, searchFewShotExamples } from "../stores/few-shot.js";
+import { getReflections } from "../stores/reflection.js";
 
 async function buildContextFunc(
   query: string,
