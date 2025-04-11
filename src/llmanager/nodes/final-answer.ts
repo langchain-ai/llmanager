@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { AgentState, AgentUpdate } from "../types.js";
 import { ChatAnthropic } from "@langchain/anthropic";
+import { findQueryStringOrThrow } from "../../utils/query.js";
 
 const FINAL_ANSWER_PROMPT = `You're a highly advanced AI manager, tasked with approving or rejecting one of your employees requests.
 
@@ -26,11 +27,7 @@ Ensure your answer is accurate, and accounts for all of the context provided abo
 `;
 
 export async function finalAnswer(state: AgentState): Promise<AgentUpdate> {
-  const query = state.messages.findLast((m) => m.getType() === "human")
-    ?.content as string | undefined;
-  if (!query) {
-    throw new Error("No query found");
-  }
+  const query = findQueryStringOrThrow(state.messages);
 
   const finalAnswerSchema = z.object({
     explanation: z

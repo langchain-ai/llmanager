@@ -1,7 +1,11 @@
-import { AgentState, AgentUpdate } from "../types.js";
+import { ReasoningState, ReasoningUpdate } from "../types.js";
 import { LangGraphRunnableConfig } from "@langchain/langgraph";
 import { ChatAnthropic } from "@langchain/anthropic";
-import { buildContext, formatContextPrompt } from "../utils/build-context.js";
+import {
+  buildContext,
+  formatContextPrompt,
+} from "../../utils/build-context.js";
+import { findQueryStringOrThrow } from "../../utils/query.js";
 
 const INITIAL_REASONING_PROMPT = `You're an AI manager tasked with analyzing and reasoning about a request one of your employees has made.
 Your task is to analyze the request from one of your employees, and reason about whether it should be approved or rejected.
@@ -24,14 +28,10 @@ The user's message will contain their request. You should ONLY respond with your
 Ensure your reasoning is detailed, and clear.`;
 
 export async function initialReasoning(
-  state: AgentState,
+  state: ReasoningState,
   config: LangGraphRunnableConfig,
-): Promise<AgentUpdate> {
-  const query = state.messages.findLast((m) => m.getType() === "human")
-    ?.content as string | undefined;
-  if (!query) {
-    throw new Error("No query found");
-  }
+): Promise<ReasoningUpdate> {
+  const query = findQueryStringOrThrow(state.messages);
 
   const { fewShotExamples, reflections } = await buildContext(
     query,
