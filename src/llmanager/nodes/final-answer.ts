@@ -36,7 +36,7 @@ export async function finalAnswer(state: AgentState): Promise<AgentUpdate> {
     explanation: z
       .string()
       .describe(
-        "The explanation for your final decision. Ensure this is detailed, and clear. It should cover everything you considered when making your final decision.",
+        "The explanation for your final decision. Ensure this is detailed, and clear. It should cover everything you considered when making your final decision. This is the explanation which will be sent back to the employee, along with the status of their request. Ensure it is formatted properly for this.",
       ),
     status: z
       .enum(["approved", "rejected"])
