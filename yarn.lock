@@ -4447,7 +4447,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"langsmith@npm:>=0.2.8 <0.4.0":
+"langsmith@npm:>=0.2.8 <0.4.0, langsmith@npm:^0.3.15":
   version: 0.3.15
   resolution: "langsmith@npm:0.3.15"
   dependencies:
@@ -4515,6 +4515,7 @@ __metadata:
     eslint-plugin-no-instanceof: ^1.0.1
     eslint-plugin-prettier: ^4.2.1
     jest: ^29.7.0
+    langsmith: ^0.3.15
     prettier: ^3.3.3
     ts-jest: ^29.1.0
     tsx: ^4.19.2

@@ -36,3 +36,14 @@ export const AgentZodState = z.object({
 
 export type AgentState = z.infer<typeof AgentZodState>;
 export type AgentUpdate = Partial<AgentState>;
+
+export const AgentZodConfiguration = z.object({
+  /**
+   * The criteria for a request to be approved.
+   */
+  approvalCriteria: z.string().optional(),
+  /**
+   * The criteria for a request to be rejected.
+   */
+  rejectionCriteria: z.string().optional(),
+});
