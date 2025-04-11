@@ -4,5 +4,12 @@
     "agent": "./src/llmanager/index.ts:graph"
   },
   "env": ".env",
-  "dependencies": ["."]
+  "dependencies": ["."],
+  "store": {
+    "index": {
+      "embed": "openai:text-embedding-3-large",
+      "dims": 3072,
+      "fields": ["input"]
+    }
+  }
 }
