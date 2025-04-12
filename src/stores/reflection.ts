@@ -8,12 +8,21 @@ const _DATA_KEY = "reflections";
 
 async function getReflectionsFunc(
   store: BaseStore | undefined,
+  assistantId: string | undefined,
 ): Promise<string[]> {
   if (!store) {
     throw new Error("Store not found");
   }
+  if (!assistantId) {
+    throw new Error(
+      "No assistant ID found when attempting to get reflections.",
+    );
+  }
 
-  const results = await store.get(REFLECTION_NAMESPACE, REFLECTION_KEY);
+  const results = await store.get(
+    [...REFLECTION_NAMESPACE, assistantId],
+    REFLECTION_KEY,
+  );
   if (!results?.value) {
     return [];
   }
@@ -27,12 +36,19 @@ export const getReflections = traceable(getReflectionsFunc, {
 
 async function putReflectionsFunc(
   store: BaseStore | undefined,
+  assistantId: string | undefined,
   reflections: string[],
 ): Promise<void> {
   if (!store) {
     throw new Error("Store not found");
   }
-  await store.put(REFLECTION_NAMESPACE, REFLECTION_KEY, {
+  if (!assistantId) {
+    throw new Error(
+      "No assistant ID found when attempting to put reflections.",
+    );
+  }
+
+  await store.put([...REFLECTION_NAMESPACE, assistantId], REFLECTION_KEY, {
     [_DATA_KEY]: reflections,
   });
 }

@@ -1,38 +1,19 @@
-import { BaseMessage } from "@langchain/core/messages";
-import { addMessages } from "@langchain/langgraph";
+import { Annotation, MessagesAnnotation } from "@langchain/langgraph";
 import "@langchain/langgraph/zod";
 import { z } from "zod";
 
-export const AgentZodState = z.object({
-  /**
-   * The list of messages, containing the original input message
-   * from the user.
-   */
-  messages: z
-    .custom<BaseMessage[]>()
-    .langgraph.reducer(
-      (a, b) => addMessages(a, b),
-      z.custom<BaseMessage | BaseMessage[]>(),
-    ),
-  /**
-   * The full context prompt as plain text.
-   */
-  promptContext: z.string(),
-  /**
-   * The reasoning generated based on the system prompt, few shots, and input messages.
-   */
-  generatedReasoning: z.string().default(() => ""),
-  /**
-   * The final answer, and explanation.
-   */
-  answer: z.object({
-    explanation: z.string(),
-    status: z.enum(["approved", "rejected"]),
-  }),
+export const AgentZodState = Annotation.Root({
+  messages: MessagesAnnotation.spec["messages"],
+  promptContext: Annotation<string>(),
+  generatedReasoning: Annotation<string>(),
+  answer: Annotation<{
+    explanation: string;
+    status: "approved" | "rejected";
+  }>(),
 });
 
-export type AgentState = z.infer<typeof AgentZodState>;
-export type AgentUpdate = Partial<AgentState>;
+export type AgentState = typeof AgentZodState.State;
+export type AgentUpdate = typeof AgentZodState.Update;
 
 export const AgentZodConfiguration = z.object({
   /**

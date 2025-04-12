@@ -68,7 +68,10 @@ ${inputs.explanation}
 async function handleHumanResponse(
   response: HumanResponse,
   state: AgentState,
-  store: BaseStore | undefined,
+  inputs: {
+    store: BaseStore | undefined;
+    assistantId: string | undefined;
+  },
 ): Promise<Command> {
   const responseType = response.type;
   if (responseType === "response") {
@@ -102,7 +105,7 @@ async function handleHumanResponse(
   };
 
   // Save the final answer & explanation in store for future use in few-shot examples
-  await putFewShotExamples(store, {
+  await putFewShotExamples(inputs.store, inputs.assistantId, {
     input: findQueryStringOrThrow(state.messages),
     answer: updatedAnswer.status,
     explanation: updatedAnswer.explanation,
@@ -166,5 +169,8 @@ export async function humanNode(
     interruptConfig,
   )[0];
 
-  return handleHumanResponse(response, state, config.store);
+  return handleHumanResponse(response, state, {
+    store: config.store,
+    assistantId: config.configurable?.assistant_id,
+  });
 }
