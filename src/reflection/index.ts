@@ -1,5 +1,9 @@
 import { Command, END, START, StateGraph } from "@langchain/langgraph";
-import { ReflectionState, ReflectionZodState } from "./types.js";
+import {
+  ReflectionState,
+  ReflectionZodConfiguration,
+  ReflectionZodState,
+} from "./types.js";
 import { fullReflection } from "./nodes/full-reflection.js";
 import { explanationReflection } from "./nodes/explanation-reflection.js";
 
@@ -22,7 +26,7 @@ function routeReflection(state: ReflectionState): Command {
   });
 }
 
-const workflow = new StateGraph(ReflectionZodState)
+const workflow = new StateGraph(ReflectionZodState, ReflectionZodConfiguration)
   .addNode("routeReflection", routeReflection, {
     ends: ["full_reflection", "explanation_reflection"],
   })

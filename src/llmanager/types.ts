@@ -24,4 +24,10 @@ export const AgentZodConfiguration = z.object({
    * The criteria for a request to be rejected.
    */
   rejectionCriteria: z.string().optional(),
+  /**
+   * The model ID to use for the LLM generations.
+   * Should be in the format `provider/model_name`.
+   * Defaults to `anthropic/claude-3-7-sonnet-latest`.
+   */
+  modelId: z.string().optional(),
 });
