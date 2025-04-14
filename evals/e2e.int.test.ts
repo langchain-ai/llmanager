@@ -1,8 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import * as ls from "langsmith/jest";
 import { HumanMessage } from "@langchain/core/messages";
-import { InMemoryStore, LangGraphRunnableConfig, MemorySaver } from "@langchain/langgraph";
-import { graph } from "../src/llmanager/index.js";
+import { Client } from "@langchain/langgraph-sdk";
 
 const inputs = [
   {
@@ -233,26 +232,48 @@ const inputs = [
 ];
 
 ls.describe("LLManager", () => {
+  const client = new Client({
+    apiUrl: "http://localhost:2024",
+  });
+
+  let assistantId = "";
+
+  // ls.test.each(inputs)("E2E Test", async ({ inputs }) => {
+  //   const threadId = uuidv4();
+  //   const assistantId = uuidv4();
+  //   const config: LangGraphRunnableConfig = {
+  //     configurable: {
+  //       assistant_id: assistantId,
+  //       thread_id: threadId,
+  //       approvalCriteria: undefined,
+  //       rejectionCriteria: undefined,
+  //     },
+  //   };
+  //   const store = new InMemoryStore();
+  //   const checkpointer = new MemorySaver();
+  //   graph.checkpointer = checkpointer;
+  //   graph.store = store;
+  //   const result = await graph.invoke(inputs, config as any);
+  //   console.log(result);
+  //   // await client.runs.wait(threadId, assistantId, {
+  //   //   ifNotExists: "create",
+  //   //   input: inputs,
+  //   // });
+  // });
+
+  beforeAll(async () => {
+    const assistant = await client.assistants.create({
+      graphId: "agent",
+    });
+    assistantId = assistant.assistant_id;
+  });
+
   ls.test.each(inputs)("E2E Test", async ({ inputs }) => {
     const threadId = uuidv4();
-    const assistantId = uuidv4();
-    const config: LangGraphRunnableConfig = {
-      configurable: {
-        assistant_id: assistantId,
-        thread_id: threadId,
-        approvalCriteria: undefined,
-        rejectionCriteria: undefined,
-      }
-    }
-    const store = new InMemoryStore();
-    const checkpointer = new MemorySaver();
-    graph.checkpointer = checkpointer;
-    graph.store = store;
-    const result = await graph.invoke(inputs, config as any)
+    const result = await client.runs.wait(threadId, assistantId, {
+      input: inputs,
+      ifNotExists: "create",
+    });
     console.log(result);
-    // await client.runs.wait(threadId, assistantId, {
-    //   ifNotExists: "create",
-    //   input: inputs,
-    // });
   });
 });
