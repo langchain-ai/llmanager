@@ -1,7 +1,6 @@
 import { LangGraphRunnableConfig } from "@langchain/langgraph";
 import { getReflections, putReflections } from "../../stores/reflection.js";
 import { ReflectionState, ReflectionUpdate } from "../types.js";
-import { ChatAnthropic } from "@langchain/anthropic";
 import { z } from "zod";
 import { loadModelFromConfig } from "../../utils/model.js";
 
