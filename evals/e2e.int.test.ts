@@ -242,6 +242,8 @@ ls.describe("LLManager", () => {
       graphId: "agent",
     });
     assistantId = assistant.assistant_id;
+
+    console.log("Using assistant ID:", assistantId);
   });
 
   ls.test.each(inputs)("E2E Test", async ({ inputs }) => {

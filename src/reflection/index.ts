@@ -32,6 +32,5 @@ const workflow = new StateGraph(ReflectionZodState)
   .addEdge("explanation_reflection", END)
   .addEdge("full_reflection", END);
 
-// TODO: Remove as any once type error fixed
-export const graph = workflow.compile() as any;
+export const graph = workflow.compile();
 graph.name = "Reflection Graph";

@@ -7,6 +7,5 @@ const workflow = new StateGraph(ReasoningZodState)
   .addEdge(START, "initial_reasoning")
   .addEdge("initial_reasoning", END);
 
-// TODO: Remove as any once type error fixed
-export const graph = workflow.compile() as any;
+export const graph = workflow.compile();
 graph.name = "Request Reasoning Graph";
