@@ -8,6 +8,51 @@ const inputs = [
     inputs: {
       messages: [
         new HumanMessage(
+          "I'd like approval to explore integrating generative AI into our customer support chatbot. This could significantly improve response accuracy and customer satisfaction. I plan to start with a prototype to evaluate potential impacts.",
+        ),
+      ],
+    },
+  },
+  {
+    inputs: {
+      messages: [
+        new HumanMessage(
+          "Requesting permission to initiate a small-scale pilot project using generative AI to enhance our code review system. This could automate routine checks and free up engineers to focus on complex issues. I'll provide regular updates on the pilot’s progress.",
+        ),
+      ],
+    },
+  },
+  {
+    inputs: {
+      messages: [
+        new HumanMessage(
+          "I'm seeking approval to research and potentially implement generative AI for automatically generating documentation for our APIs. This initiative could greatly reduce manual documentation efforts and improve consistency across our products.",
+        ),
+      ],
+    },
+  },
+  {
+    inputs: {
+      messages: [
+        new HumanMessage(
+          "I propose we explore using generative AI to create synthetic datasets for testing our software products. This method could improve our test coverage and help detect bugs earlier. I'd like authorization to proceed with initial experiments.",
+        ),
+      ],
+    },
+  },
+  {
+    inputs: {
+      messages: [
+        new HumanMessage(
+          "Requesting approval to integrate generative AI into our existing software development pipeline for automatic code generation. This could improve developer productivity and reduce the time spent on repetitive coding tasks.",
+        ),
+      ],
+    },
+  },
+  {
+    inputs: {
+      messages: [
+        new HumanMessage(
           "I would like to request approval to attend the AWS re:Invent conference next month. This will help me stay updated with the latest cloud technologies, which are directly relevant to our ongoing projects.",
         ),
       ],
