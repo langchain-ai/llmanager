@@ -2,6 +2,8 @@
 
 LLManager is a LangGraph workflow for managing approval requests. It uses reflection, and dynamic prompt composition to learn and adapt over time to a wide variety of approval requests.
 
+![Architecture Diagram](/static/architecture-diagram.png)
+
 ## Usage
 
 LLManager is configurable by setting two custom fields:
