@@ -89,6 +89,8 @@ After entering these values, click submit and select/refresh the inbox to ensure
 
 ## How it works
 
+![LLManager Workflow](/static/graph-screenshot.png)
+
 Upon receiving a request, LLManager will preform the following steps:
 
 ### Reasoning
