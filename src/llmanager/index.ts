@@ -19,6 +19,5 @@ const workflow = new StateGraph(AgentZodState, AgentZodConfiguration)
   .addEdge("final_answer", "human_node")
   .addEdge("reflection", END);
 
-// TODO: Remove as any once type error fixed
-export const graph = workflow.compile() as any;
+export const graph = workflow.compile();
 graph.name = "LLManager Graph";

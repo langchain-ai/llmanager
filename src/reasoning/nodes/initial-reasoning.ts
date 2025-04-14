@@ -49,7 +49,7 @@ export async function initialReasoning(
   );
 
   const model = new ChatAnthropic({
-    model: "claude-3-7-sonnet",
+    model: "claude-3-7-sonnet-latest",
     temperature: 0,
   });
 

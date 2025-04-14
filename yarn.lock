@@ -1184,9 +1184,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@langchain/langgraph@npm:^0.2.63":
+"@langchain/langgraph@file:/Users/bracesproul/code/lang-chain-ai/langgraphjs/libs/langgraph::locator=llmanager%40workspace%3A.":
   version: 0.2.63
-  resolution: "@langchain/langgraph@npm:0.2.63"
+  resolution: "@langchain/langgraph@file:/Users/bracesproul/code/lang-chain-ai/langgraphjs/libs/langgraph#/Users/bracesproul/code/lang-chain-ai/langgraphjs/libs/langgraph::hash=12d526&locator=llmanager%40workspace%3A."
   dependencies:
     "@langchain/langgraph-checkpoint": ~0.0.16
     "@langchain/langgraph-sdk": ~0.0.32
@@ -1198,7 +1198,7 @@ __metadata:
   peerDependenciesMeta:
     zod-to-json-schema:
       optional: true
-  checksum: 0b581d1e49b85a73c7a2bb1e7be45ec41c01e3ea13b7d17a173c80594fde8e368f895396ee95f4fc408b5fbd5016770f965839b8c2e00d9195cac4c1b74affd2
+  checksum: 34c2afd6ef2d5e826d0e09efad135e08f276c8b1e593dbeeb81d1a75cdbe02171e6b212da56156c9973d23094a5f45ecfc4b79b0dc9e03d3aa5f6dc4c7295d41
   languageName: node
   linkType: hard
 
@@ -5449,7 +5449,7 @@ __metadata:
     "@jest/globals": ^29.7.0
     "@langchain/anthropic": ^0.3.17
     "@langchain/core": ^0.3.44
-    "@langchain/langgraph": ^0.2.63
+    "@langchain/langgraph": "file:/Users/bracesproul/code/lang-chain-ai/langgraphjs/libs/langgraph"
     "@langchain/langgraph-cli": ^0.0.21
     "@langchain/langgraph-sdk": 0.0.66
     "@langchain/openai": ^0.5.5
