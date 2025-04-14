@@ -87,7 +87,7 @@ export async function fullReflection(
   });
 
   const model = new ChatAnthropic({
-    model: "claude-3-7-sonnet",
+    model: "claude-3-7-sonnet-latest",
     temperature: 0,
     thinking: {
       type: "enabled",

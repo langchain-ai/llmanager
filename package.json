@@ -23,7 +23,7 @@
   "dependencies": {
     "@langchain/anthropic": "^0.3.17",
     "@langchain/core": "^0.3.44",
-    "@langchain/langgraph": "^0.2.63",
+    "@langchain/langgraph": "^0.2.64",
     "@langchain/langgraph-sdk": "0.0.66",
     "@langchain/openai": "^0.5.5",
     "dotenv": "^16.4.7",
