@@ -91,7 +91,7 @@ After entering these values, click submit and select/refresh the inbox to ensure
 
 ![LLManager Workflow](/static/graph-screenshot.png)
 
-Upon receiving a request, LLManager will preform the following steps:
+Upon receiving a request, LLManager will perform the following steps:
 
 ### Reasoning
 
@@ -113,7 +113,7 @@ After generating a reasoning report and a final answer, we interrupt the graph a
 
 ### Reflection
 
-The final step in the LLManager flow is to preform reflection. If the request was accepted without changes, this step is skipped. This is because we do not need to reflect on a run which the LLManager got correct. If it's submitted with edits, we call the reflection subgraph, which routes the request to one of two nodes.
+The final step in the LLManager flow is to perform reflection. If the request was accepted without changes, this step is skipped. This is because we do not need to reflect on a run which the LLManager got correct. If it's submitted with edits, we call the reflection subgraph, which routes the request to one of two nodes.
 
 #### Answer correct, explanation incorrect
 
