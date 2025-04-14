@@ -1,11 +1,11 @@
 import { ReasoningState, ReasoningUpdate } from "../types.js";
 import { LangGraphRunnableConfig } from "@langchain/langgraph";
-import { ChatAnthropic } from "@langchain/anthropic";
 import {
   buildContext,
   formatContextPrompt,
 } from "../../utils/build-context.js";
 import { findQueryStringOrThrow } from "../../utils/query.js";
+import { loadModelFromConfig } from "../../utils/model.js";
 
 const INITIAL_REASONING_PROMPT = `You're an AI manager tasked with analyzing and reasoning about a request one of your employees has made.
 Your task is to analyze the request from one of your employees, and reason about whether it should be approved or rejected.
@@ -48,8 +48,7 @@ export async function initialReasoning(
     }),
   );
 
-  const model = new ChatAnthropic({
-    model: "claude-3-7-sonnet-latest",
+  const model = await loadModelFromConfig(config, {
     temperature: 0,
   });
 

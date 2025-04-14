@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { AgentState, AgentUpdate } from "../types.js";
-import { ChatAnthropic } from "@langchain/anthropic";
 import { findQueryStringOrThrow } from "../../utils/query.js";
+import { LangGraphRunnableConfig } from "@langchain/langgraph";
+import { loadModelFromConfig } from "../../utils/model.js";
 
 const FINAL_ANSWER_PROMPT = `You're a highly advanced AI manager, tasked with approving or rejecting one of your employees requests.
 
@@ -26,7 +27,10 @@ Here is the users request:
 Ensure your answer is accurate, and accounts for all of the context provided above.
 `;
 
-export async function finalAnswer(state: AgentState): Promise<AgentUpdate> {
+export async function finalAnswer(
+  state: AgentState,
+  config: LangGraphRunnableConfig,
+): Promise<AgentUpdate> {
   const query = findQueryStringOrThrow(state.messages);
 
   const finalAnswerSchema = z.object({
@@ -49,10 +53,10 @@ export async function finalAnswer(state: AgentState): Promise<AgentUpdate> {
     .replace("{REASONING}", state.generatedReasoning)
     .replace("{REQUEST}", query);
 
-  const model = new ChatAnthropic({
-    model: "claude-3-7-sonnet-latest",
+  const model = await loadModelFromConfig(config, {
     temperature: 0,
-  }).bindTools([
+  });
+  const modelWithTools = model.bindTools([
     {
       name: "finalAnswer",
       schema: finalAnswerSchema,
@@ -61,7 +65,7 @@ export async function finalAnswer(state: AgentState): Promise<AgentUpdate> {
     },
   ]);
 
-  const response = await model.invoke([
+  const response = await modelWithTools.invoke([
     {
       role: "user",
       content: formattedPrompt,

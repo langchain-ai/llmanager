@@ -3,6 +3,7 @@ import { getReflections, putReflections } from "../../stores/reflection.js";
 import { ReflectionState, ReflectionUpdate } from "../types.js";
 import { ChatAnthropic } from "@langchain/anthropic";
 import { z } from "zod";
+import { loadModelFromConfig } from "../../utils/model.js";
 
 const FULL_REFLECTION_PROMPT = `You're an advanced AI assistant tasked with generating reflections on a an incorrect answer to a user request.
 A human manually reviewed the answer, and the explanation and determined they were both incorrect.
@@ -86,14 +87,15 @@ export async function fullReflection(
     reflections: reflections,
   });
 
-  const model = new ChatAnthropic({
-    model: "claude-3-7-sonnet-latest",
+  const model = await loadModelFromConfig(config, {
     temperature: 0,
     thinking: {
       type: "enabled",
       budget_tokens: 3072,
     },
-  }).bindTools(
+  });
+
+  const modelWithTools = model.bindTools(
     [
       {
         name: "generate_reflections",
@@ -113,7 +115,7 @@ export async function fullReflection(
     },
   );
 
-  const response = await model.invoke([
+  const response = await modelWithTools.invoke([
     {
       role: "human",
       content: prompt,
