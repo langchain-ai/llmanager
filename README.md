@@ -1,6 +1,6 @@
 # LLManager
 
-LLManager is a LangGraph workflow for managing approval requests. It uses reflection, and dynamic prompt composition to learn and adapt over time to a wide variety of approval requests.
+LLManager is a LangGraph workflow for managing approval requests. It uses reflection to improve and learn over time, along with dynamic prompt composition to handle a wide variety of approval requests.
 
 ![Architecture Diagram](/static/architecture-diagram.png)
 
@@ -15,7 +15,7 @@ These fields are set in the graph's configuration object, and can be tied to spe
 
 You do not need to set these fields, as LLManager will learn from past experiences and update its prompt accordingly. However, setting them will help the model make more informed decisions, and lessen the "onboarding" period.
 
-After creating a new assistant and (optionally) setting these fields, you can start using LLManager for approval requests.
+After creating a new assistant and (optionally) setting these fields, you can start using LLManager for approval requests. The recommended method of doing this is through the [Agent Inbox](https://github.com/langchain-ai/agent-inbox). Read [this section](#agent-inbox) to learn more.
 
 ## Development
 
