@@ -1,5 +1,9 @@
 import { Command, END, START, StateGraph } from "@langchain/langgraph";
-import { ReflectionState, ReflectionZodState } from "./types.js";
+import {
+  ReflectionState,
+  ReflectionZodConfiguration,
+  ReflectionZodState,
+} from "./types.js";
 import { fullReflection } from "./nodes/full-reflection.js";
 import { explanationReflection } from "./nodes/explanation-reflection.js";
 
@@ -22,7 +26,7 @@ function routeReflection(state: ReflectionState): Command {
   });
 }
 
-const workflow = new StateGraph(ReflectionZodState)
+const workflow = new StateGraph(ReflectionZodState, ReflectionZodConfiguration)
   .addNode("routeReflection", routeReflection, {
     ends: ["full_reflection", "explanation_reflection"],
   })
@@ -32,6 +36,5 @@ const workflow = new StateGraph(ReflectionZodState)
   .addEdge("explanation_reflection", END)
   .addEdge("full_reflection", END);
 
-// TODO: Remove as any once type error fixed
-export const graph = workflow.compile() as any;
+export const graph = workflow.compile();
 graph.name = "Reflection Graph";

@@ -1,8 +1,8 @@
 import { LangGraphRunnableConfig } from "@langchain/langgraph";
 import { getReflections, putReflections } from "../../stores/reflection.js";
 import { ReflectionState, ReflectionUpdate } from "../types.js";
-import { ChatAnthropic } from "@langchain/anthropic";
 import { z } from "zod";
+import { loadModelFromConfig } from "../../utils/model.js";
 
 const EXPLANATION_REFLECTION_PROMPT = `You're an advanced AI assistant tasked with generating reflections on an incorrect explanation for a user request, even though the final answer was correct.
 A human manually reviewed the explanation and determined it was incorrect, despite the answer being correct.
@@ -82,14 +82,14 @@ export async function explanationReflection(
     reflections: reflections,
   });
 
-  const model = new ChatAnthropic({
-    model: "claude-3-7-sonnet-latest",
-    temperature: 0,
+  const model = await loadModelFromConfig(config, {
     thinking: {
       type: "enabled",
       budget_tokens: 3072,
     },
-  }).bindTools(
+  });
+
+  const modelWithTools = model.bindTools(
     [
       {
         name: "generate_reflections",
@@ -109,7 +109,9 @@ export async function explanationReflection(
     },
   );
 
-  const response = await model.invoke([{ role: "human", content: prompt }]);
+  const response = await modelWithTools.invoke([
+    { role: "human", content: prompt },
+  ]);
 
   const newReflections = response.tool_calls?.[0]?.args?.reflections as
     | string[]

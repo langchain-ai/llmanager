@@ -1,12 +1,11 @@
 import { END, START, StateGraph } from "@langchain/langgraph";
-import { ReasoningZodState } from "./types.js";
+import { ReasoningZodConfiguration, ReasoningZodState } from "./types.js";
 import { initialReasoning } from "./nodes/initial-reasoning.js";
 
-const workflow = new StateGraph(ReasoningZodState)
+const workflow = new StateGraph(ReasoningZodState, ReasoningZodConfiguration)
   .addNode("initial_reasoning", initialReasoning)
   .addEdge(START, "initial_reasoning")
   .addEdge("initial_reasoning", END);
 
-// TODO: Remove as any once type error fixed
-export const graph = workflow.compile() as any;
+export const graph = workflow.compile();
 graph.name = "Request Reasoning Graph";

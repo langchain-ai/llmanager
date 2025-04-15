@@ -9,7 +9,6 @@ import {
   Send,
 } from "@langchain/langgraph";
 import { ReflectionState } from "../../reflection/types.js";
-import { findQueryStringOrThrow } from "../../utils/query.js";
 import { putFewShotExamples } from "../../stores/few-shot.js";
 
 /**
@@ -106,7 +105,7 @@ async function handleHumanResponse(
 
   // Save the final answer & explanation in store for future use in few-shot examples
   await putFewShotExamples(inputs.store, inputs.assistantId, {
-    input: findQueryStringOrThrow(state.messages),
+    input: state.query,
     answer: updatedAnswer.status,
     explanation: updatedAnswer.explanation,
   });
@@ -120,7 +119,7 @@ async function handleHumanResponse(
   }
 
   const reflectionInput: ReflectionState = {
-    messages: state.messages,
+    query: state.query,
     generatedReasoning: state.generatedReasoning,
     originalAnswer: state.answer,
     editedAnswer: updatedAnswer,
@@ -140,10 +139,8 @@ export async function humanNode(
   state: AgentState,
   config: LangGraphRunnableConfig,
 ): Promise<Command> {
-  const query = findQueryStringOrThrow(state.messages);
-
   const description = constructDescription({
-    request: query,
+    request: state.query,
     explanation: state.answer.explanation,
     status: state.answer.status,
   });

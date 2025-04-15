@@ -29,13 +29,15 @@ async function main() {
   const prompt = `You're an advanced AI assistant, helping AI researchers generate a dataset for their evaluation.
 You're helping them evaluate an agent who makes decisions on whether to approve/reject requests from employees at a company.
 
-These requests should be anything an employee could ask his manager for approval for at a software company like Rakuten.
-
 The employees you're emulating are all software engineers.
+
+These requests should be focused on project/product requests, specific to generative AI projects.
+
+For example, an employee could be requesting approval to start working on integrating AI into an existing product. Your examples should be focused on this type of request.
 
 Ensure each request is somewhat detailed, but not too long. These should be 2-3 sentences, and should emulate what real-life requests would look like.
 
-Generate 25 requests.`;
+Generate 5 requests.`;
 
   const response = await model.invoke([{ role: "user", content: prompt }]);
 

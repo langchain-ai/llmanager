@@ -18,6 +18,7 @@ yarn-error.log
 .env
 .env.*
 !.env.*.example
+!.env.example
 .ipynb_checkpoints
 
 # Screenshots taken during tests
