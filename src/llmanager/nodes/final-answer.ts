@@ -1,10 +1,12 @@
 import { z } from "zod";
 import { AgentState, AgentUpdate } from "../types.js";
-import { findQueryStringOrThrow } from "../../utils/query.js";
 import { LangGraphRunnableConfig } from "@langchain/langgraph";
 import { loadModelFromConfig } from "../../utils/model.js";
 
 const FINAL_ANSWER_PROMPT = `You're a highly advanced AI manager, tasked with approving or rejecting one of your employees requests.
+
+Here is the users request:
+{REQUEST}
 
 To assist with this task, you're provided with the following context:
 - Examples of previous requests, along with their outcomes. These are previous requests, and the final outcome you came to, along with the reasoning behind that outcome.
@@ -15,13 +17,11 @@ To assist with this task, you're provided with the following context:
 {CONTEXT}
 
 Finally, you are also given a detailed reasoning report into why the request should be approved or rejected.
-
 {REASONING}
 
 Use all of this context to ground your final decision.
 
-Here is the users request:
-
+Once again, here is the user's request:
 {REQUEST}
 
 Ensure your answer is accurate, and accounts for all of the context provided above.
@@ -31,13 +31,11 @@ export async function finalAnswer(
   state: AgentState,
   config: LangGraphRunnableConfig,
 ): Promise<AgentUpdate> {
-  const query = findQueryStringOrThrow(state.messages);
-
   const finalAnswerSchema = z.object({
     explanation: z
       .string()
       .describe(
-        "The explanation for your final decision. Ensure this is detailed, and clear. It should cover everything you considered when making your final decision. This is the explanation which will be sent back to the employee, along with the status of their request. Ensure it is formatted properly for this.",
+        "The explanation for your final decision. Ensure this is detailed, and clear, while still being concise and straightforward. It should provide enough information to the user to properly inform them as to why their request was accepted/rejected. This is the explanation which will be sent back to the employee, along with the status of their request. Ensure it is formatted properly for this type of communication.",
       ),
     status: z
       .enum(["approved", "rejected"])
@@ -51,7 +49,7 @@ export async function finalAnswer(
     state.promptContext,
   )
     .replace("{REASONING}", state.generatedReasoning)
-    .replace("{REQUEST}", query);
+    .replaceAll("{REQUEST}", state.query);
 
   const model = await loadModelFromConfig(config, {
     temperature: 0,

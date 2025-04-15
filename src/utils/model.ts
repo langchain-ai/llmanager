@@ -33,7 +33,12 @@ export async function loadModelFromConfig(
   const modelId =
     config.configurable?.modelId ?? "anthropic/claude-3-7-sonnet-latest";
 
-  const model = await initChatModel(modelId, modelConfig);
+  const provider = modelId.split("/")[0];
+  const modelName = modelId.split("/").slice(1).join("/");
+  const model = await initChatModel(modelName, {
+    ...modelConfig,
+    modelProvider: provider,
+  });
   if (!model.bindTools) {
     throw new Error("Model does not support binding tools");
   }

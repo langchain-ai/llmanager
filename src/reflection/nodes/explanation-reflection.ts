@@ -83,7 +83,6 @@ export async function explanationReflection(
   });
 
   const model = await loadModelFromConfig(config, {
-    temperature: 0,
     thinking: {
       type: "enabled",
       budget_tokens: 3072,

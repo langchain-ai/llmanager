@@ -1,9 +1,9 @@
-import { Annotation, MessagesAnnotation } from "@langchain/langgraph";
+import { Annotation } from "@langchain/langgraph";
 import "@langchain/langgraph/zod";
 import { z } from "zod";
 
 export const ReflectionZodState = Annotation.Root({
-  messages: MessagesAnnotation.spec["messages"],
+  query: Annotation<string>(),
   generatedReasoning: Annotation<string>(),
   originalAnswer: Annotation<{
     explanation: string;

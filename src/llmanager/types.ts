@@ -1,9 +1,13 @@
-import { Annotation, MessagesAnnotation } from "@langchain/langgraph";
+import { Annotation } from "@langchain/langgraph";
 import "@langchain/langgraph/zod";
 import { z } from "zod";
 
+export const AgentZodStateInput = Annotation.Root({
+  query: Annotation<string>(),
+});
+
 export const AgentZodState = Annotation.Root({
-  messages: MessagesAnnotation.spec["messages"],
+  ...AgentZodStateInput.spec,
   promptContext: Annotation<string>(),
   generatedReasoning: Annotation<string>(),
   answer: Annotation<{
