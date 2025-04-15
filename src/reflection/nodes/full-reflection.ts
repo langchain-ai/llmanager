@@ -1,10 +1,9 @@
 import { LangGraphRunnableConfig } from "@langchain/langgraph";
-import { getReflections, putReflections } from "../../stores/reflection.js";
+import { getReflections } from "../../stores/reflection.js";
 import { ReflectionState, ReflectionUpdate } from "../types.js";
-import { z } from "zod";
-import { loadModelFromConfig } from "../../utils/model.js";
+import { ChatAnthropic } from "@langchain/anthropic";
 
-const FULL_REFLECTION_PROMPT = `You're an advanced AI assistant tasked with generating reflections on a an incorrect answer to a user request.
+const FULL_REFLECTION_PROMPT = `You're an advanced AI assistant tasked with generating a summary of your reflection to an incorrect answer and explanation you provided.
 A human manually reviewed the answer, and the explanation and determined they were both incorrect.
 
 The answer and explanation are apart of a review process, where an employee submits a request for approval, and given some approval and rejection criteria, you determined whether to approve or reject the request.
@@ -39,7 +38,8 @@ Your new task is to do the following:
 1. Carefully examine your original (incorrect) answer and explanation.
 2. Carefully examine the corrected answer and explanation.
 3. Think deeply about where you went wrong, and how you can avoid making the same mistake in the future. Compare your explanation to the human corrected explanation to identify the root cause.
-4. Generate clear, concise reflections which will allow you to avoid making the same mistake in the future. Read the 'reflection-generation-rules' below for more details.
+4. Generate clear, concise thinking into exactly where your thought process went wrong, and how you can avoid making the same mistake in the future.
+5. Read the 'reflection-generation-rules' below for more details.
 
 <reflection-generation-rules>
 1. Reflections must be concise, and direct.
@@ -48,10 +48,12 @@ Your new task is to do the following:
 4. Reflections should be specific and actionable.
 5. Reflections should be focused on the root cause of the error, as to prevent the same mistake from happening again.
 6. Reflections should be written in the present tense, as they will be used to guide future decision-making.
+
+You are not generating the exact reflections in this step, but rather a summary of your reflections to this error. In a future step you'll extract the specific reflections from this summary.
 </reflection-generation-rules>
 
-With all of this in mind, please generate new reflections on your mistake to assist with future decision-making. You should generate at least one reflection, as you got this wrong so something needs to be changed.
-However, you do not need to generate multiple unless you failed in multiple ways. This is very important as you do not want to generate bloated, and overly long reflections.`;
+With all of this in mind, please generate a summary of new reflections on your mistake to assist with future decision-making. You do not need to be overly verbose, the less the better. Your main goal is to figure out exactly what went wrong, and how you can avoid making the same mistake in the future.
+Think long and hard, go!`;
 
 function buildReflectionPrompt(inputs: {
   explanation: string;
@@ -86,32 +88,14 @@ export async function fullReflection(
     reflections: reflections,
   });
 
-  const model = await loadModelFromConfig(config, {
+  const modelWithTools = new ChatAnthropic({
+    model: "claude-3-7-sonnet-latest",
+    maxTokens: 4500,
     thinking: {
       type: "enabled",
       budget_tokens: 3072,
     },
   });
-
-  const modelWithTools = model.bindTools(
-    [
-      {
-        name: "generate_reflections",
-        schema: z.object({
-          reflections: z
-            .array(z.string())
-            .describe(
-              "New reflections on your mistake. You can generate a single reflection, or multiple reflections if you failed in multiple ways.",
-            ),
-        }),
-        description:
-          "Generate new reflections (or a single reflection) on your mistake, which you can use in future decision-making to avoid the mistake you made in this instance.",
-      },
-    ],
-    {
-      tool_choice: "generate_reflections",
-    },
-  );
 
   const response = await modelWithTools.invoke([
     {
@@ -120,17 +104,7 @@ export async function fullReflection(
     },
   ]);
 
-  const newReflections = response.tool_calls?.[0]?.args?.reflections as
-    | string[]
-    | undefined;
-  if (!newReflections?.length) {
-    throw new Error("No new reflections generated");
-  }
-
-  await putReflections(config.store, config.configurable?.assistant_id, [
-    ...reflections,
-    ...newReflections,
-  ]);
-
-  return {};
+  return {
+    reflectionsSummary: response.content as string,
+  };
 }

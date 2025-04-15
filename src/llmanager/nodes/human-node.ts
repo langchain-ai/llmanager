@@ -127,6 +127,7 @@ async function handleHumanResponse(
       args.args.status === state.answer.status
         ? "explanationChanged"
         : "allChanged",
+    reflectionsSummary: "",
   };
 
   // The suggested action was edited. Send to reflection.
