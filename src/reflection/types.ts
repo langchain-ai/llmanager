@@ -14,6 +14,7 @@ export const ReflectionZodState = Annotation.Root({
     status: "approved" | "rejected";
   }>(),
   changeType: Annotation<"explanationChanged" | "allChanged">(),
+  reflectionsSummary: Annotation<string>(),
 });
 
 export type ReflectionState = typeof ReflectionZodState.State;

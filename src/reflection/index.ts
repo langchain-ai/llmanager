@@ -6,6 +6,7 @@ import {
 } from "./types.js";
 import { fullReflection } from "./nodes/full-reflection.js";
 import { explanationReflection } from "./nodes/explanation-reflection.js";
+import { extractReflections } from "./nodes/extract-reflections.js";
 
 /**
  * Routes the reflection based on the change type. If the changeType is
@@ -32,9 +33,11 @@ const workflow = new StateGraph(ReflectionZodState, ReflectionZodConfiguration)
   })
   .addNode("full_reflection", fullReflection)
   .addNode("explanation_reflection", explanationReflection)
+  .addNode("extract_reflections", extractReflections)
   .addEdge(START, "routeReflection")
-  .addEdge("explanation_reflection", END)
-  .addEdge("full_reflection", END);
+  .addEdge("explanation_reflection", "extract_reflections")
+  .addEdge("full_reflection", "extract_reflections")
+  .addEdge("extract_reflections", END);
 
 export const graph = workflow.compile();
 graph.name = "Reflection Graph";
