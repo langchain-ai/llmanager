@@ -17,6 +17,24 @@ You do not need to set these fields, as LLManager will learn from past experienc
 
 After creating a new assistant and (optionally) setting these fields, you can start using LLManager for approval requests. The recommended method of doing this is through the [Agent Inbox](https://github.com/langchain-ai/agent-inbox). Read [this section](#agent-inbox) to learn more.
 
+### Configuration
+
+The following fields can be set in the graph's configuration object:
+
+#### `approvalCriteria`
+
+A string that defines the criteria for a request to be approved.
+
+#### `rejectionCriteria`
+
+A string that defines the criteria for a request to be rejected.
+
+#### `modelId`
+
+A string that defines the model to use for the graph. Should be in the format `provider/model_name`. This must be a provider that is supported by the `initChatModel` method. The model also must support tool calling. To use non OpenAI/Anthropic models, you must install their LangChain integration package (OpenAI and Anthropic integration packages are already installed). E.g. `yarn install @langchain/google-genai`.
+
+Default: `anthropic/claude-3-7-sonnet-latest`.
+
 ## Development
 
 To use LLManager locally, follow these steps:
