@@ -1,5 +1,8 @@
 # LLManager
 
+> [!TIP]
+> 🎥 Watch [this video](https://youtu.be/uqRK_aJBR2w) for a deep dive into LLManager's architecture, use cases, and more!
+
 LLManager is a LangGraph workflow for managing approval requests. It uses reflection to improve and learn over time, along with dynamic prompt composition to handle a wide variety of approval requests.
 
 ![Architecture Diagram](/static/architecture-diagram.png)
